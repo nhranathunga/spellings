@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const letterContainer = document.getElementById('letter-container');
     const feedback = document.getElementById('feedback');
     const checkButton = document.getElementById('check-button');
-    const speakButton = document.getElementById('speak-button');
     const nextButton = document.getElementById('next-button');
 
     const words = [
@@ -32,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let syllables = [];
     let practiceCount = 0;
     const maxPractices = 3;
+    let isSyllableMode = true;
 
-    // Select a random word from the array
     selectRandomWord();
 
     function selectRandomWord() {
@@ -43,25 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
         createSyllableElements();
         feedback.textContent = '';
         nextButton.style.display = 'none';
-        wordContainer.innerHTML = ''; // Clear the displayed word
-        practiceCount = 0; // Reset practice count
-        checkButton.style.display = 'none'; // Hide check button initially
+        wordContainer.innerHTML = '';
+        practiceCount = 0;
+        checkButton.style.display = 'none';
+        isSyllableMode = true; // Start with syllable mode
     }
 
     function createSyllableElements() {
-        letterContainer.innerHTML = ''; // Clear previous syllables
-        const shuffledSyllables = shuffleArray(syllables.slice());
-        shuffledSyllables.forEach(syllable => {
-            const syllableElement = document.createElement('div');
-            syllableElement.textContent = syllable;
-            syllableElement.classList.add('letter');
-            syllableElement.setAttribute('draggable', 'true');
+        letterContainer.innerHTML = '';
+        const elements = isSyllableMode ? syllables : currentWord.split('');
+        const shuffledElements = shuffleArray(elements.slice());
+        shuffledElements.forEach(element => {
+            const letterElement = document.createElement('div');
+            letterElement.textContent = element;
+            letterElement.classList.add('letter');
+            
+            letterElement.addEventListener('click', () => {
+                moveElementToWordContainer(letterElement);
+            });
 
-            // Add drag events
-            syllableElement.addEventListener('dragstart', dragStart);
-            syllableElement.addEventListener('dragend', dragEnd);
-
-            letterContainer.appendChild(syllableElement);
+            letterContainer.appendChild(letterElement);
         });
     }
 
@@ -73,100 +73,47 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
-    function dragStart() {
-        this.classList.add('dragging');
+    function moveElementToWordContainer(element) {
+        wordContainer.appendChild(element);
+        checkButton.style.display = 'block';
     }
 
-    function dragEnd() {
-        this.classList.remove('dragging');
-    }
-
-    // Drop event for the word container
-    wordContainer.addEventListener('dragover', (e) => {
-        e.preventDefault();
-    });
-
-    wordContainer.addEventListener('drop', (e) => {
-        const draggedElement = document.querySelector('.dragging');
-        if (draggedElement) {
-            wordContainer.appendChild(draggedElement);
-            checkButton.style.display = 'block'; // Show check button when item is dropped
-        }
-    });
-
-    // Check the spelling
     checkButton.addEventListener('click', () => {
         const userWord = Array.from(wordContainer.children).map(child => child.textContent).join('');
         if (userWord === currentWord) {
-            feedback.textContent = 'Correct! Well done!';
+            feedback.textContent = 'Correct!';
             feedback.classList.add('correct');
-            displayCompletedWord();
             practiceCount++;
-            speakCorrectWord(); // Speak the correct word
-
-            if (practiceCount < maxPractices) {
-                // If less than max practices, allow reshuffling for next practice
-                setTimeout(() => {
-                    wordContainer.innerHTML = ''; // Clear displayed word after showing it
-                    letterContainer.innerHTML = ''; // Clear letters for next practice
-                    createShuffledLetterElements(); // Create new shuffled letters
-                    feedback.textContent = ''; // Clear feedback
-                    checkButton.style.display = 'none'; // Hide check button
-                }, 1000); // Delay before reshuffling
+            if (isSyllableMode) {
+                feedback.textContent = 'Syllables correct! Now practice the spelling.';
+                isSyllableMode = false; // Switch to spelling mode
+                resetForSpellingPractice();
+            } else if (practiceCount < maxPractices) {
+                feedback.textContent = `Correct! Practice ${practiceCount} of ${maxPractices}`;
+                resetForSpellingPractice();
             } else {
-                // If max practices reached, show next button
+                feedback.textContent = 'Well done! Moving to next word.';
                 nextButton.style.display = 'block';
-                checkButton.style.display = 'none'; // Hide check button
+                checkButton.style.display = 'none';
             }
         } else {
-            feedback.textContent = 'Incorrect. Try again!';
+            feedback.textContent = 'Try again!';
             feedback.classList.remove('correct');
-            resetLetters(); // Reset letters for another try
+            resetLetters();
         }
     });
 
     function resetLetters() {
-        // Reset the letter container by reshuffling and creating syllable elements again
-        wordContainer.innerHTML = ''; // Clear any dropped letters
-        createSyllableElements(); // Recreate the syllables with shuffled order
-        checkButton.style.display = 'none'; // Hide the check button until a new drag and drop
+        wordContainer.innerHTML = '';
+        createSyllableElements();
+        checkButton.style.display = 'none';
     }
 
-    function createShuffledLetterElements() {
-        const shuffledLetters = shuffleArray(currentWord.split(''));
-        letterContainer.innerHTML = ''; // Clear previous letters
-        shuffledLetters.forEach(letter => {
-            const letterElement = document.createElement('div');
-            letterElement.textContent = letter;
-            letterElement.classList.add('letter');
-            letterElement.setAttribute('draggable', 'true');
-
-            // Add drag events
-            letterElement.addEventListener('dragstart', dragStart);
-            letterElement.addEventListener('dragend', dragEnd);
-
-            letterContainer.appendChild(letterElement);
-        });
+    function resetForSpellingPractice() {
+        wordContainer.innerHTML = '';
+        createSyllableElements();
+        checkButton.style.display = 'none';
     }
 
-    function displayCompletedWord() {
-        wordContainer.innerHTML = ''; // Clear syllables
-        const completedWordElement = document.createElement('div');
-        completedWordElement.textContent = currentWord.toUpperCase();
-        wordContainer.appendChild(completedWordElement);
-    }
-
-    function speakCorrectWord() {
-        const utterance = new SpeechSynthesisUtterance(currentWord);
-        speechSynthesis.speak(utterance);
-    }
-
-    // Speak syllables
-    speakButton.addEventListener('click', () => {
-        const utterance = new SpeechSynthesisUtterance(syllables.join('-'));
-        speechSynthesis.speak(utterance);
-    });
-
-    // Next button functionality
     nextButton.addEventListener('click', selectRandomWord);
 });

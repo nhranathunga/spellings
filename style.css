@@ -1,82 +1,51 @@
-body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    background-color: #f0f8ff;
-    padding: 20px;
-}
-
-h1 {
-    color: #333;
-}
-
-.drop-area {
-    border: 2px dashed #007BFF;
-    padding: 20px;
-    margin: 20px auto;
-    width: 80%;
-    min-height: 50px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    background-color: #e7f0ff;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-}
-
-.drop-area:hover {
-    background-color: #d0e1ff;
-}
-
 .letter {
-    margin: 5px;
-    padding: 15px;
-    border: 2px solid #007BFF;
-    background-color: #ffffff;
-    cursor: grab;
-    border-radius: 5px;
+    width: 80px;
+    height: 80px;
+    background-color: #ffeb3b;
+    margin: 10px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 80px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
     user-select: none;
     transition: background-color 0.3s;
 }
 
-.letter.dragging {
+.letter:hover {
+    background-color: #ffc107;
+}
+
+.dragging {
     opacity: 0.5;
-    cursor: grabbing;
 }
 
-.feedback {
-    margin: 20px;
-    font-size: 1.5em;
-    color: #d9534f; /* Red for incorrect */
+#wordContainer {
+    border: 2px solid #ccc;
+    min-height: 120px;
+    padding: 10px;
+    margin-bottom: 20px;
 }
 
-.feedback.correct {
-    color: #5cb85c; /* Green for correct */
-}
-
-#current-word {
-    font-size: 2.5em;
+.correct {
+    color: green;
+    font-size: 24px;
     font-weight: bold;
-    margin-top: 20px;
-    color: #007BFF; /* Blue for the completed word */
 }
 
-button {
-    margin: 10px;
+#check-button, #next-button {
+    background-color: #4CAF50;
+    color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #28a745; /* Green button */
-    color: white;
-    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-button:hover {
-    background-color: #218838; /* Darker green on hover */
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+#check-button:hover, #next-button:hover {
+    background-color: #45a049;
 }
