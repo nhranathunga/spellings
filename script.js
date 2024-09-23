@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkButton = document.getElementById('check-button');
     const nextButton = document.getElementById('next-button');
     const speakButton = document.getElementById('speak-button');
-    
+
     const words = [
         { word: "abandon", syllables: "a-ban-don" },
         { word: "abode", syllables: "a-bode" },
@@ -35,11 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSyllableMode = true; // Indicates whether we're in syllable or spelling mode
 
     selectRandomWord();
- 
-    speakButton.addEventListener('click',()=>{
-        speakWord(currentWord); 
-    })
 
+    speakButton.addEventListener('click', () => {
+        speakWord(currentWord); 
+    });
 
     // Function to select a random word and reset states
     function selectRandomWord() {
@@ -53,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         practiceCount = 0;
         checkButton.style.display = 'none';
         isSyllableMode = true; // Start with syllable mode for every new word
+        
     }
 
     // Function to create either syllable or letter elements
@@ -64,10 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const letterElement = document.createElement('div');
             letterElement.textContent = element;
             letterElement.classList.add('letter');
-            
+
             letterElement.addEventListener('click', () => {
                 moveElementToWordContainer(letterElement);
-                
             });
 
             letterContainer.appendChild(letterElement);
@@ -111,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userWord === currentWord) {
                 practiceCount++;
                 feedback.textContent = `Correct! Practice ${practiceCount} of ${maxPractices}`;
+                displayBigWord(); // Show the word in big font
                 if (practiceCount < maxPractices) {
                     resetForSpellingPractice(); // Practice spelling with shuffled letters
                 } else {
@@ -126,6 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Display the current word in big font
+    function displayBigWord() {
+        wordContainer.innerHTML = `<span style="font-size: 2em;">${currentWord}</span>`; // Adjust the size as needed
+    }
+
     // Reset the container for the next practice cycle (spelling)
     function resetForSpellingPractice() {
         wordContainer.innerHTML = '';
@@ -136,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset letters or syllables after a wrong attempt
     function resetLetters() {
-        wordContainer.innerHTML = '';
+        wordContainer.innerHTML = ''; // Clear the displayed word
         speakWord(currentWord);  // Speak the full word on each click
         createSyllableElements(); // Reset syllables/letters for a retry
         checkButton.style.display = 'none';
