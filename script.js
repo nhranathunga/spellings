@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = document.getElementById('feedback');
     const checkButton = document.getElementById('check-button');
     const nextButton = document.getElementById('next-button');
-
+    const speakButton = document.getElementById('speak-button');
+    
     const words = [
         { word: "abandon", syllables: "a-ban-don" },
         { word: "abode", syllables: "a-bode" },
@@ -31,10 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let syllables = [];
     let practiceCount = 0;
     const maxPractices = 3;
-    let isSyllableMode = true;
+    let isSyllableMode = true; // Indicates whether we're in syllable or spelling mode
 
     selectRandomWord();
+ 
+    speakButton.addEventListener('click',()=>{
+        speakWord(currentWord); 
+    })
 
+
+    // Function to select a random word and reset states
     function selectRandomWord() {
         const randomIndex = Math.floor(Math.random() * words.length);
         currentWord = words[randomIndex].word;
@@ -45,9 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
         wordContainer.innerHTML = '';
         practiceCount = 0;
         checkButton.style.display = 'none';
-        isSyllableMode = true; // Start with syllable mode
+        isSyllableMode = true; // Start with syllable mode for every new word
     }
 
+    // Function to create either syllable or letter elements
     function createSyllableElements() {
         letterContainer.innerHTML = '';
         const elements = isSyllableMode ? syllables : currentWord.split('');
@@ -59,12 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             letterElement.addEventListener('click', () => {
                 moveElementToWordContainer(letterElement);
+                
             });
 
             letterContainer.appendChild(letterElement);
         });
     }
 
+    // Shuffle an array of syllables or letters
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -73,53 +83,69 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
+    // Move the clicked syllable or letter to the word container
     function moveElementToWordContainer(element) {
         wordContainer.appendChild(element);
         checkButton.style.display = 'block';
-        speakWord(currentWord);
     }
 
-    function speakWord(word) {
-        const utterance = new SpeechSynthesisUtterance(word);
+    // Speak the word or syllable using Text-to-Speech
+    function speakWord(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(utterance);
     }
 
+    // Handle the check button functionality
     checkButton.addEventListener('click', () => {
         const userWord = Array.from(wordContainer.children).map(child => child.textContent).join('');
-        if (userWord === currentWord) {
-            feedback.textContent = 'Correct!';
-            feedback.classList.add('correct');
-            practiceCount++;
-            if (isSyllableMode) {
-                feedback.textContent = 'Syllables correct! Now practice the spelling.';
-                isSyllableMode = false; // Switch to spelling mode
-                resetForSpellingPractice();
-            } else if (practiceCount < maxPractices) {
-                feedback.textContent = `Correct! Practice ${practiceCount} of ${maxPractices}`;
+        if (isSyllableMode) {
+            if (userWord === syllables.join('')) {
+                feedback.textContent = 'Correct syllables! Now, practice the spelling.';
+                isSyllableMode = false; // Switch to letter spelling mode
                 resetForSpellingPractice();
             } else {
-                feedback.textContent = 'Well done! Moving to next word.';
-                nextButton.style.display = 'block';
-                checkButton.style.display = 'none';
+                feedback.textContent = 'Try again!';
+                resetLetters(); // Reset the syllables to let user retry
             }
         } else {
-            feedback.textContent = 'Try again!';
-            feedback.classList.remove('correct');
-            resetLetters();
+            if (userWord === currentWord) {
+                practiceCount++;
+                feedback.textContent = `Correct! Practice ${practiceCount} of ${maxPractices}`;
+                if (practiceCount < maxPractices) {
+                    resetForSpellingPractice(); // Practice spelling with shuffled letters
+                } else {
+                    feedback.textContent = 'Well done! Moving to the next word.';
+                    speakWord(currentWord);  // Speak the full word on each click
+                    nextButton.style.display = 'block';
+                    checkButton.style.display = 'none';
+                }
+            } else {
+                feedback.textContent = 'Try again!';
+                resetLetters(); // Reset the letters for retry
+            }
         }
     });
 
-    function resetLetters() {
-        wordContainer.innerHTML = '';
-        createSyllableElements();
-        checkButton.style.display = 'none';
-    }
-
+    // Reset the container for the next practice cycle (spelling)
     function resetForSpellingPractice() {
         wordContainer.innerHTML = '';
-        createSyllableElements();
+        speakWord(currentWord);  // Speak the full word on each click
+        createSyllableElements(); // Use letters for spelling now
         checkButton.style.display = 'none';
     }
 
-    nextButton.addEventListener('click', selectRandomWord);
+    // Reset letters or syllables after a wrong attempt
+    function resetLetters() {
+        wordContainer.innerHTML = '';
+        speakWord(currentWord);  // Speak the full word on each click
+        createSyllableElements(); // Reset syllables/letters for a retry
+        checkButton.style.display = 'none';
+    }
+
+    // Move to the next word
+    nextButton.addEventListener('click', () => {
+        selectRandomWord();
+        createSyllableElements();
+        speakWord(currentWord); // Speak the new word on load
+    });
 });
