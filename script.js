@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkButton = document.getElementById('check-button');
     const nextButton = document.getElementById('next-button');
     const speakButton = document.getElementById('speak-button');
+    const word = document.getElementById('word-container');
 
     const words = [
         { word: "abandon", syllables: "a-ban-don" },
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to create either syllable or letter elements
     function createSyllableElements() {
+        word.innerHTML = `<span style="font-size: 2em;">${currentWord}</span>`; // Adjust the size as needed
         letterContainer.innerHTML = '';
         const elements = isSyllableMode ? syllables : currentWord.split('');
         const shuffledElements = shuffleArray(elements.slice());
@@ -66,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             letterElement.classList.add('letter');
 
             letterElement.addEventListener('click', () => {
+                word.innerHTML = ''; // Adjust the size as needed
                 moveElementToWordContainer(letterElement);
             });
 
@@ -100,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSyllableMode) {
             if (userWord === syllables.join('')) {
                 feedback.textContent = 'Correct syllables! Now, practice the spelling.';
+                displayBigWord();
                 isSyllableMode = false; // Switch to letter spelling mode
                 resetForSpellingPractice();
             } else {
@@ -110,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userWord === currentWord) {
                 practiceCount++;
                 feedback.textContent = `Correct! Practice ${practiceCount} of ${maxPractices}`;
-                displayBigWord(); // Show the word in big font
+               
                 if (practiceCount < maxPractices) {
                     resetForSpellingPractice(); // Practice spelling with shuffled letters
                 } else {
