@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function moveElementToWordContainer(element) {
         wordContainer.appendChild(element);
         checkButton.style.display = 'block';
+        speakWord(currentWord);
+    }
+
+    function speakWord(word) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        window.speechSynthesis.speak(utterance);
     }
 
     checkButton.addEventListener('click', () => {

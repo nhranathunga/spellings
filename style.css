@@ -1,51 +1,69 @@
-.letter {
-    width: 80px;
-    height: 80px;
-    background-color: #ffeb3b;
-    margin: 10px;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 80px;
-    border-radius: 10px;
-    font-size: 20px;
-    font-weight: bold;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     color: #333;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+#current-word {
+    display: flex ;
+    font-size: 2em;
+    justify-content: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #2196F3;
+    border: 2px solid #2196F3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#letter-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.letter {
+    background-color: #fff;
+    border: 1px solid #2196F3;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px;
     cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .letter:hover {
-    background-color: #ffc107;
+    background-color: #2196F3;
+    color: #fff;
+    transform: scale(1.1);
 }
 
-.dragging {
-    opacity: 0.5;
+#feedback {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 20px;
 }
 
-#wordContainer {
-    border: 2px solid #ccc;
-    min-height: 120px;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-.correct {
-    color: green;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-#check-button, #next-button {
-    background-color: #4CAF50;
-    color: white;
+button {
+    display: block;
+    margin: 20px auto;
     padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #4CAF50;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-#check-button:hover, #next-button:hover {
+button:hover {
     background-color: #45a049;
 }
